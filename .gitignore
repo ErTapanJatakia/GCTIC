@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------
+# GCTIC — version control exclusions
+# ---------------------------------------------------------------------------
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Build output and caches
+dist/
+dist-ssr/
+build/
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Environment files and secrets — NEVER commit these.
+# Only the documented template (.env.example) is tracked.
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+
+# Local intelligence captures, feed dumps and exports.
+# These may contain unverified, sensitive or copyrighted third-party data.
+local-data/
+*.pcap
+*.pcapng
+
+# Test output
+coverage/
+
+# Local verification artefacts (browser captures, logs, extracted system libraries)
+artifacts/
+.logs/
+.apt/
+.browser-deps/
+.browser-fonts/
+.vitest/
+test-results/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editors and operating systems
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Misc
+*.local
+.eslintcache

@@ -1,0 +1,117 @@
+/* ==========================================================================
+   GCTIC — Design tokens
+   Single source of truth for colour, type, spacing, elevation and motion.
+   Values are deliberately restrained: tactical accents are used sparingly
+   for state and hierarchy, never as decoration.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* --- Surfaces: near-black through graphite ---------------------------- */
+  --surface-void: #060809;
+  --surface-base: #0a0d10;
+  --surface-raised: #0e1216;
+  --surface-panel: #11161b;
+  --surface-overlay: #161c22;
+  --surface-inset: #0b0f13;
+
+  /* --- Borders ---------------------------------------------------------- */
+  --border-hairline: #191f25;
+  --border-subtle: #212a31;
+  --border-strong: #2d373f;
+  --border-accent: rgb(51 196 140 / 32%);
+
+  /* --- Text ------------------------------------------------------------- */
+  --text-primary: #e7edf1;
+  --text-secondary: #a3afb9;
+  --text-tertiary: #828f9a;
+  --text-inverse: #070a0c;
+
+  /* --- Tactical accents ------------------------------------------------ */
+  --accent-green: #33c48c;
+  --accent-green-dim: #249c6d;
+  --accent-green-wash: rgb(51 196 140 / 10%);
+  --accent-cyan: #5aa9c9;
+  --accent-cyan-wash: rgb(90 169 201 / 10%);
+  --accent-amber: #d6a250;
+  --accent-amber-wash: rgb(214 162 80 / 10%);
+  --accent-red: #d9605a;
+  --accent-red-wash: rgb(217 96 90 / 10%);
+  --accent-grey: #7d8892;
+
+  /* --- Focus ------------------------------------------------------------ */
+  --focus-ring: 0 0 0 2px var(--surface-base), 0 0 0 4px rgb(90 169 201 / 75%);
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-sans:
+    'Inter', 'Segoe UI', 'Helvetica Neue', Arial, system-ui, -apple-system, sans-serif;
+  --font-mono:
+    ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  --text-2xs: 0.6875rem; /* 11px — micro labels */
+  --text-xs: 0.75rem; /* 12px — metadata */
+  --text-sm: 0.8125rem; /* 13px — dense body */
+  --text-md: 0.875rem; /* 14px — default body */
+  --text-lg: 1rem; /* 16px — emphasis */
+  --text-xl: 1.25rem; /* 20px — section titles */
+  --text-2xl: 1.625rem; /* 26px */
+  --text-3xl: clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem); /* 28–40px — page titles */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --tracking-tight: -0.01em;
+  --tracking-label: 0.14em;
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.4;
+  --leading-normal: 1.6;
+
+  /* --- Spacing (4px base) ---------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --header-height: 3.5rem;
+  --sidebar-width: 18rem;
+  --content-max: 100rem;
+  --gutter: var(--space-6);
+
+  /* --- Radii: squared-off, instrument-panel geometry -------------------- */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 5px;
+  --radius-pill: 999px;
+
+  /* --- Elevation -------------------------------------------------------- */
+  --shadow-panel: 0 1px 0 rgb(255 255 255 / 2%) inset;
+  --shadow-raised: 0 18px 40px -32px rgb(0 0 0 / 90%);
+  --shadow-drawer: 0 0 48px -12px rgb(0 0 0 / 80%);
+
+  /* --- Motion ----------------------------------------------------------- */
+  --transition-fast: 120ms ease;
+  --transition-base: 180ms ease;
+
+  /* --- Layers ----------------------------------------------------------- */
+  --z-header: 40;
+  --z-backdrop: 50;
+  --z-drawer: 60;
+  --z-skip-link: 70;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-base: 0ms;
+  }
+}
