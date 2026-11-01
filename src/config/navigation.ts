@@ -63,6 +63,7 @@ export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [
         path: '/analysis/indicators',
         status: 'available',
         icon: 'indicator',
+        phase: 'Phase 1.5',
         summary:
           'Validated, normalised indicators from local datasets, with per-source provenance.',
       },

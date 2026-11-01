@@ -23,7 +23,7 @@ export const APP_IDENTITY: AppIdentity = {
   fullName: 'Global Cyber Threat Intelligence Command Centre',
   version: __APP_VERSION__,
   buildTimestamp: __BUILD_TIMESTAMP__,
-  phase: 'Phase 1 — Foundation',
+  phase: 'Phase 1.5 — Local intelligence foundation',
   license: 'Apache-2.0',
   missionStatement:
     'A geospatially enriched cyber threat intelligence platform that consolidates open-source threat reporting into a single operational picture for defensive security teams, analysts and researchers.',
