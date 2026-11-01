@@ -358,3 +358,7 @@ Each phase must leave the application building, lint-clean, type-clean and teste
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full text.
 Copyright and project identity are preserved from the original repository.
+
+<img width="2816" height="1536" alt="1_v1G4pJc_pd3qSCrgmPvM1g" src="https://github.com/user-attachments/assets/ac416c70-c038-4eea-816f-b9e6b042ce99" />
+
+---
