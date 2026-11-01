@@ -1,7 +1,8 @@
 # GCTIC — Global Cyber Threat Intelligence Command Centre
 
-A global, geospatially enriched Cyber Threat Intelligence (CTI) platform for defensive
-security operations, portfolio-grade engineering demonstration and research use.
+<p align="justify">
+A global, geospatially enriched Cyber Threat Intelligence (CTI) platform for defensive security operations, portfolio-grade engineering demonstration and research use. 
+</p>
 
 > **Current status: Phase 1 — Foundation.** This repository contains the application shell,
 > design system, domain contracts and validation layer. No threat feeds are ingested, no
@@ -11,6 +12,8 @@ security operations, portfolio-grade engineering demonstration and research use.
 - **Licence:** Apache License 2.0 (see [LICENSE](LICENSE))
 - **Runtime cost:** INR 0 — no paid services, no trial dependencies, no telemetry, no API keys
 - **Data mode:** `DEMO` — no live intelligence sources are connected
+
+<img width="1685" height="948" alt="GCTI1" src="https://github.com/user-attachments/assets/ae443ccf-d076-44e5-a6f7-339ef17f7eb0" />
 
 ---
 
