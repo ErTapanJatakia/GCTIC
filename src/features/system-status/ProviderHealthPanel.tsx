@@ -32,7 +32,7 @@ export function ProviderHealthPanel() {
     <Panel
       label="COLLECTION"
       title="Intelligence provider adapters"
-      description="Registered adapters and their reported health. No adapter is registered in this build."
+      description="Registered adapters and their reported health, including dataset freshness where the adapter can report it."
       actions={
         state.phase === 'ready' ? (
           <Badge variant={state.health.length === 0 ? 'neutral' : 'success'}>
@@ -54,8 +54,8 @@ export function ProviderHealthPanel() {
       {state.phase === 'ready' && state.health.length === 0 ? (
         <EmptyState
           title="No provider adapters registered"
-          description="GCTIC has no external intelligence sources configured. Ingestion connectors arrive in Phase 2 and will register through the provider contract."
-          hint="Expected in Phase 1 — foundation build"
+          description="No intelligence provider is registered in this build. Connectors attach through the provider contract, never from presentation components."
+          hint="Registry is empty"
         />
       ) : null}
 

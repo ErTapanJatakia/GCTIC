@@ -21,19 +21,25 @@ const ARCHITECTURE_LAYERS = [
   {
     id: 'validation',
     layer: 'Validation',
-    responsibility: 'Observable validation, URL safety, IP scope classification, bounds',
+    responsibility: 'Observable validation, canonicalisation, URL safety, IP scope classification',
     status: 'Implemented',
+  },
+  {
+    id: 'ingestion',
+    layer: 'Ingestion',
+    responsibility: 'Local JSON/GeoJSON parsing, per-source observations, deduplication',
+    status: 'Implemented — local datasets',
   },
   {
     id: 'providers',
     layer: 'Provider adapters',
-    responsibility: 'Ingestion connector contract and registry',
-    status: 'Contract only — no connectors',
+    responsibility: 'Connector contract, registry and local file-backed adapter',
+    status: 'Implemented — 1 local adapter',
   },
   {
     id: 'enrichment',
     layer: 'Enrichment & correlation',
-    responsibility: 'Corroboration, deduplication, derived records',
+    responsibility: 'External enrichment, cross-source correlation, derived records',
     status: 'Not implemented',
   },
   {
@@ -53,7 +59,7 @@ const ARCHITECTURE_LAYERS = [
 const FEATURE_LABELS: Readonly<Record<keyof typeof FEATURE_FLAGS, string>> = {
   liveFeeds: 'Live feed ingestion',
   globe: '3D globe visualisation',
-  iocProcessing: 'IOC processing engine',
+  iocProcessing: 'Local IOC validation and deduplication',
   analytics: 'Analytics and reporting',
   historicalStore: 'Historical intelligence store',
   authentication: 'Authentication and accounts',

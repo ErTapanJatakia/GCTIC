@@ -61,16 +61,10 @@ export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [
         id: 'indicators',
         label: 'IOC Explorer',
         path: '/analysis/indicators',
-        status: 'planned',
+        status: 'available',
         icon: 'indicator',
-        phase: 'Phase 2',
         summary:
-          'Search, validation and correlation of indicators of compromise.',
-        plannedCapabilities: [
-          'IOC validation and normalisation across supported observable types',
-          'Correlation across providers with corroboration counts',
-          'Safe-handling controls: no automatic retrieval of hostile content',
-        ],
+          'Validated, normalised indicators from local datasets, with per-source provenance.',
       },
       {
         id: 'actors',

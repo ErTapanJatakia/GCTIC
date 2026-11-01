@@ -1,14 +1,20 @@
 /**
  * Provider registry.
  *
- * Phase 1 registers no connectors: no external threat feed is integrated, no
- * credentials exist and no network collection occurs. The registry is the seam
- * through which Phase 2 connectors will be attached, and the UI reports the
- * empty state honestly rather than fabricating data.
+ * Exactly one connector is registered in this build: the local JSON/GeoJSON
+ * adapter, which reads a bundled synthetic demonstration dataset. No external
+ * feed is integrated, no credential exists and no network collection occurs.
+ * The registry remains the seam through which further connectors attach, and
+ * the UI reports whatever is registered rather than assuming a fixed list.
  */
 
 import { assertValidDescriptor } from './provider';
 import type { ProviderHealth, ProviderStatus, ThreatIntelProvider } from './provider';
+import {
+  LOCAL_PROVIDER_ID,
+  createLocalFileProvider,
+  loadBundledSyntheticDataset,
+} from './local-file-provider';
 
 export interface ProviderRegistry {
   list(): readonly ThreatIntelProvider[];
@@ -47,11 +53,22 @@ export function createProviderRegistry(
 }
 
 /**
- * The application-wide registry. Phase 1 intentionally leaves it empty.
- * Registration will occur in the intelligence-sources module (Phase 2), never
- * from presentation components.
+ * The bundled local dataset adapter. Its loader is lazy, so importing this
+ * module performs no I/O and cannot delay first paint.
  */
-export const providerRegistry: ProviderRegistry = createProviderRegistry();
+export const localDatasetProvider = createLocalFileProvider({
+  load: loadBundledSyntheticDataset,
+});
+
+/**
+ * The application-wide registry. Registration happens here, never from
+ * presentation components.
+ */
+export const providerRegistry: ProviderRegistry = createProviderRegistry([
+  localDatasetProvider,
+]);
+
+export { LOCAL_PROVIDER_ID };
 
 /**
  * Collect health for every registered provider.

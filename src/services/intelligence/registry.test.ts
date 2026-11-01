@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { collectProviderHealth, createProviderRegistry } from './registry';
+import {
+  LOCAL_PROVIDER_ID,
+  collectProviderHealth,
+  createProviderRegistry,
+  providerRegistry,
+} from './registry';
 import type { ProviderHealth, ThreatIntelProvider } from './provider';
 
 function createFixtureProvider(
@@ -29,7 +34,7 @@ function createFixtureProvider(
 }
 
 describe('provider registry', () => {
-  it('starts empty — no connectors are registered in Phase 1', () => {
+  it('starts empty when no connectors are supplied', () => {
     const registry = createProviderRegistry();
 
     expect(registry.size()).toBe(0);
@@ -52,6 +57,16 @@ describe('provider registry', () => {
     expect(() => registry.register(createFixtureProvider('fixture-a'))).toThrow(
       /already registered/,
     );
+  });
+
+  it('registers the bundled local dataset provider in the application registry', () => {
+    expect(providerRegistry.size()).toBe(1);
+
+    const provider = providerRegistry.get(LOCAL_PROVIDER_ID);
+
+    expect(provider?.descriptor.kind).toBe('local-file');
+    expect(provider?.descriptor.requiresCredentials).toBe(false);
+    expect(provider?.descriptor.capabilities).toContain('indicators');
   });
 
   it('rejects malformed descriptors', () => {

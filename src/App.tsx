@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { ALL_MODULES } from '@/config/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { IocExplorerPage } from '@/features/indicators/IocExplorerPage';
 import { MethodologyPage } from '@/features/methodology/MethodologyPage';
 import { NotFoundPage } from '@/features/not-found/NotFoundPage';
 import { OverviewPage } from '@/features/overview/OverviewPage';
@@ -27,6 +28,8 @@ function resolveModuleElement(module: NavigationItem): ReactElement {
         return <SystemStatusPage />;
       case 'methodology':
         return <MethodologyPage />;
+      case 'indicators':
+        return <IocExplorerPage />;
       default:
         return <PlannedModulePage module={module} />;
     }

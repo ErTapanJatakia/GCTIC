@@ -47,7 +47,9 @@ export type FeatureFlag =
 export const FEATURE_FLAGS: Readonly<Record<FeatureFlag, boolean>> = {
   liveFeeds: false,
   globe: false,
-  iocProcessing: false,
+  // Local validation, normalisation and deduplication are implemented. External
+  // enrichment and cross-source correlation are not, and remain disabled.
+  iocProcessing: true,
   analytics: false,
   historicalStore: false,
   authentication: false,

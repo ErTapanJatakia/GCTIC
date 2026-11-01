@@ -4,10 +4,12 @@
 A global, geospatially enriched Cyber Threat Intelligence (CTI) platform for defensive security operations, portfolio-grade engineering demonstration and research use. 
 </p>
 
-> **Current status: Phase 1 — Foundation.** This repository contains the application shell,
-> design system, domain contracts and validation layer. No threat feeds are ingested, no
-> indicator processing runs and no geospatial visualisation is active. Nothing in this build
-> should inform an operational security decision.
+> **Current status: Phase 1.5 — Local intelligence data foundation.** This repository contains
+> the application shell, design system, domain contracts, a local JSON/GeoJSON ingestion
+> pipeline (validation → normalisation → deduplication → `ThreatIndicator`) and a functional IOC
+> Explorer. Every record comes from a bundled **synthetic** dataset; no live feed is collected
+> and no geospatial visualisation is active. Nothing in this build should inform an operational
+> security decision.
 
 - **Licence:** Apache License 2.0 (see [LICENSE](LICENSE))
 - **Runtime cost:** INR 0 — no paid services, no trial dependencies, no telemetry, no API keys
@@ -41,10 +43,14 @@ picture while keeping every datum traceable to the source that supplied it.
 | Design token system and component library | **Implemented** | Panels, badges, tables, metrics, loading / empty / error states |
 | Intelligence domain model | **Implemented** | Provenance, assessment grades, confidence bounds, GeoJSON-ready types |
 | Validation and safe-handling utilities | **Implemented** | IOC validation, URL safety, IP scope classification, text sanitiser |
-| Provider adapter contract and registry | **Implemented (contract only)** | Zero connectors registered by design |
-| Unit tests | **Implemented** | 27 tests across validation, IP classification and the provider registry |
+| Provider adapter contract and registry | **Implemented** | One local file-backed adapter registered |
+| Local ingestion pipeline | **Implemented** | JSON + GeoJSON parsing, per-source observations, deduplication |
+| Observable normalisation | **Implemented** | IPv4, IPv6 (RFC 5952), domain/FQDN, URL, MD5, SHA-1, SHA-256 |
+| IOC Explorer | **Implemented** | Search, type/category/grade filters, pagination, provenance detail |
+| Synthetic demonstration dataset | **Implemented** | 16 observations, 12 indicators, 2 synthetic sources, 2 GeoJSON points |
+| Unit tests | **Implemented** | 71 tests across validation, IP classification, normalisation, ingestion, provider and dataset |
 | External threat feed connectors | **Not implemented** | Phase 2 |
-| IOC processing / enrichment engine | **Not implemented** | Phase 2–3 |
+| External enrichment / GeoIP | **Not implemented** | Phase 3 |
 | CesiumJS 3D globe and CZML playback | **Not implemented** | Phase 3 |
 | ECharts analytics and reporting | **Not implemented** | Phase 5 |
 | Historical storage and authentication | **Not implemented** | Phase 4–5 |
@@ -70,6 +76,10 @@ synthetic telemetry is rendered to simulate capability.
 ├──────────────────────────────────────────────────────────────┤
 │ Validation        lib/validation · lib/ip                      │
 ├──────────────────────────────────────────────────────────────┤
+│ Pipeline          services/intelligence/normalisation          │
+│                   services/intelligence/ingest                 │
+│                   services/intelligence/local-file-provider     │
+├──────────────────────────────────────────────────────────────┤
 │ Service seam      services/intelligence/provider (contract)    │
 │                   services/intelligence/registry (registry)    │
 └──────────────────────────────────────────────────────────────┘
@@ -94,8 +104,55 @@ interface ThreatIntelProvider {
 
 A remote API client, a local JSON/GeoJSON file adapter or a Web Worker can implement this
 contract interchangeably. The UI consumes only the registry, so a local backend can replace a
-remote one without a frontend rewrite. The Phase 1 registry is intentionally empty; the System
-Status page reports that state rather than masking it.
+remote one without a frontend rewrite. This build registers exactly one adapter
+(`local-synthetic-dataset`); the System Status page reports every registered adapter and its
+reported health rather than assuming a fixed list.
+
+**Contract extension (additive, backward compatible).** `IndicatorQuery` gained optional
+`search`, `categories` and `assessments` fields, and `IndicatorPage` gained an optional `total`
+so the explorer can show a real match count. Existing implementations that ignore the new
+fields remain valid; `registry.test.ts` and the provider tests cover the extended shape.
+
+### 3.5 Ingestion pipeline
+
+```
+JSON dataset ─┐
+              ├─► schema inspection ─► validation ─► normalisation ─► dedupe ─► ThreatIndicator[]
+GeoJSON  ─────┘        (per record)                                     (by type + value)
+```
+
+[`ingest.ts`](src/services/intelligence/ingest.ts) throws only when the dataset cannot be
+interpreted at all (no root object, no `observations` array, no usable source). Individual
+malformed observations are rejected with a bounded `code` and message, so a partially damaged
+dataset still yields every record it can justify. Every rejection reason omits the rejected
+value.
+
+Deduplication is deterministic over `iocType:normalisedValue`. Observations are retained per
+source record, and `corroboration` reports observations, distinct sources,
+`repeatedFromSameSource` and `multiSource`. Consequences enforced in code:
+
+- repeated rows from one source never count as independent corroboration;
+- a single source declaring `verified` is clamped to `inferred` — one source cannot corroborate
+  itself;
+- `verified` requires two distinct sources that each declared it;
+- any synthetic observation makes the record `synthetic`, permanently;
+- category resolution reports `unknown` unless every observation agrees;
+- missing confidence, last-seen timestamps and locations stay absent — nothing is estimated.
+
+### 3.6 Synthetic dataset
+
+[`src/data/datasets/synthetic-indicators.json`](src/data/datasets/synthetic-indicators.json)
+holds 16 observations from two sources declared `sourceType: "synthetic"`, merging into 12
+indicators across all seven supported observable types. Every IPv4 address is inside
+`192.0.2.0/24`, `198.51.100.0/24` or `203.0.113.0/24`; the IPv6 address is inside the
+`2001:db8::/32` documentation prefix; every domain and URL sits under a reserved example
+namespace; every hash is a repeated-character placeholder. Every observation is graded
+`synthetic`, so no record can ever reach an operational grade.
+
+[`synthetic-geo.geojson`](src/data/datasets/synthetic-geo.geojson) supplies two invented point
+observations, each declared `precision: "unknown"` with a place label stating it is synthetic.
+A GeoJSON point is attached only when its `indicator` validates and matches an ingested record,
+so a location can never be silently attached to an unrelated indicator.
 
 ### 3.3 Module registry
 
@@ -157,14 +214,21 @@ dependency. These are introduced only when the corresponding module is built.
     ├── config/
     │   ├── app.config.ts       # identity, runtime config, feature flags
     │   ├── assessment-grades.ts# grade definitions and handling rules
+    │   ├── threat-taxonomy.ts  # indicator type, category and reliability labels
     │   └── navigation.ts       # module registry (routes + readiness)
+    ├── data/datasets/
+    │   ├── synthetic-indicators.json       # labelled synthetic observations
+    │   ├── synthetic-geo.geojson           # invented observation points
+    │   └── synthetic-dataset.test.ts       # dataset labelling and range assertions
     ├── features/
     │   ├── overview/           # command overview landing screen
+    │   ├── indicators/         # IOC Explorer page and record detail panel
     │   ├── methodology/        # assessment, provenance, handling reference
     │   ├── system-status/      # runtime diagnostics, provider health panel
     │   ├── planned/            # explicit not-implemented placeholder
     │   └── not-found/          # 404 route
     ├── hooks/
+    │   ├── useIndicatorExplorer.ts # debounced search, filters, cursor pagination
     │   ├── useProviderHealth.ts# async provider health with retry
     │   └── useUtcClock.ts      # UTC operational clock
     ├── lib/
@@ -174,7 +238,13 @@ dependency. These are introduced only when the corresponding module is built.
     │   └── validation.ts       # input validation and sanitisation
     ├── services/intelligence/
     │   ├── provider.ts         # provider contract and descriptor guard
-    │   ├── registry.ts         # registry, health collection, empty Phase 1 state
+    │   ├── registry.ts         # registry, health collection, adapter registration
+    │   ├── normalisation.ts    # canonicalisation and correlation keys
+    │   ├── ingest.ts           # dataset parsing, validation, dedupe, grading
+    │   ├── local-file-provider.ts # local JSON/GeoJSON adapter, lazy and cached
+    │   ├── normalisation.test.ts
+    │   ├── ingest.test.ts
+    │   ├── local-file-provider.test.ts
     │   └── registry.test.ts
     ├── styles/
     │   ├── tokens.css          # colour, type, spacing, elevation, motion
@@ -274,7 +344,13 @@ will never be prefixed `VITE_`, committed, logged or rendered.
 - **No unsafe HTML.** React text nodes only. `dangerouslySetInnerHTML` is not used anywhere and
   must not be introduced; the interface renders untrusted strings as text by construction.
 - **No automatic artefact handling.** GCTIC never opens, executes, previews or downloads a URL,
-  sample or file referenced by intelligence.
+  sample or file referenced by intelligence. Source references are rendered as inert text
+  unless they validated as absolute `http(s)` URLs, and even then require a deliberate click
+  (`rel="noopener noreferrer nofollow"`). Nothing is fetched to build a page.
+- **Bounded parsing.** Ingestion never trusts dataset shape: unknown fields are ignored, text is
+  length-bounded and sanitised, enums are whitelisted, timestamps must parse, coordinates must be
+  valid WGS84 points, and a malformed record is rejected individually instead of aborting the
+dataset. Rejection messages never echo the rejected value.
 - **Provenance preserved.** Every record carries source identity, class, retrieval time and
   licensing. Attribution survives normalisation, enrichment and storage.
 - **Honest assessment.** `verified` requires corroboration; `inferred` is labelled as judgement;
@@ -333,7 +409,8 @@ no colour literals appear in component styles outside the token definitions.
 | Phase | Scope | State |
 | --- | --- | --- |
 | 1 | Foundation: shell, routing, design system, domain model, validation, provider seam | **Complete** |
-| 2 | Intelligence sources: provider adapters, normalisation pipeline, ingestion status, IOC explorer | Planned |
+| 1.5 | Local intelligence foundation: ingestion, normalisation, deduplication, IOC Explorer, synthetic dataset | **Complete** |
+| 2 | Intelligence sources: remote provider adapters, ingestion schedules, source status views | Planned |
 | 3 | Geospatial: CesiumJS globe, CZML event playback, geolocation precision handling | Planned |
 | 4 | Analysis: actor and campaign tracking, correlation, historical observation store | Planned |
 | 5 | Analytics and reporting: ECharts views, report composition, export with citations | Planned |

@@ -12,7 +12,13 @@
  * by an indicator.
  */
 
-import type { IocType, IntelCapability, ThreatIndicator } from '@/types/intelligence';
+import type {
+  Assessment,
+  IocType,
+  IntelCapability,
+  ThreatCategory,
+  ThreatIndicator,
+} from '@/types/intelligence';
 
 export type ProviderKind = 'remote-api' | 'local-file' | 'browser-mock';
 
@@ -45,11 +51,17 @@ export interface IndicatorQuery {
   readonly types?: readonly IocType[];
   /** ISO 8601 UTC lower bound on first observation. */
   readonly since?: string;
+  /** Free-text search over normalised and original values, tags and category. */
+  readonly search?: string;
+  readonly categories?: readonly ThreatCategory[];
+  readonly assessments?: readonly Assessment[];
 }
 
 export interface IndicatorPage {
   readonly items: readonly ThreatIndicator[];
   readonly nextCursor?: string;
+  /** Total number of records matching the query filters, before pagination. */
+  readonly total?: number;
   /** Provenance of the page itself, retained on export. */
   readonly retrievedAt: string;
 }

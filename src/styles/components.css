@@ -923,6 +923,215 @@
   border-color: rgb(217 96 90 / 30%);
 }
 
+/* --- IOC Explorer ------------------------------------------------------- */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  align-items: flex-end;
+}
+
+.field {
+  display: flex;
+  flex: 0 1 11rem;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 8.5rem;
+}
+
+.field--grow {
+  flex: 2 1 18rem;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
+}
+
+.input:hover,
+.select:hover {
+  border-color: var(--border-strong);
+}
+
+.input:focus-visible,
+.select:focus-visible {
+  outline: none;
+  border-color: var(--border-accent);
+  box-shadow: var(--focus-ring);
+}
+
+.filter-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-hairline);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+}
+
+.record-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.record-list > li + li {
+  border-top: 1px solid var(--border-hairline);
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-5);
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.record:hover {
+  background: rgb(255 255 255 / 2%);
+}
+
+.record[data-selected='true'] {
+  border-left-color: var(--accent-green);
+  background: var(--accent-green-wash);
+}
+
+.record:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.record__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.record__value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.record__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-inset);
+}
+
+.pagination__info {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.pagination__controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.pagination__controls .btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.record-detail__title {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.record-detail__badges {
+  margin-bottom: var(--space-4);
+}
+
+.record-detail__value {
+  overflow-wrap: anywhere;
+}
+
+.record-detail__section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.record-detail__hint {
+  max-width: 76ch;
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+.data-table--compact {
+  min-width: 32rem;
+  font-size: var(--text-xs);
+}
+
+.data-table--compact thead th,
+.data-table--compact tbody th,
+.data-table--compact tbody td {
+  padding: var(--space-2) var(--space-3);
+}
+
+@media (max-width: 48rem) {
+  .field,
+  .field--grow {
+    flex: 1 1 100%;
+  }
+
+  .record {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
 /* --- Responsive adjustments -------------------------------------------- */
 
 @media (max-width: 720px) {

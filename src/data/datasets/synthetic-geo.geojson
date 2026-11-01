@@ -1,0 +1,33 @@
+{
+  "type": "FeatureCollection",
+  "name": "gctic-synthetic-observation-locations",
+  "description": "Fictional observation coordinates generated for GCTIC development. These points are not derived from any real report, GeoIP database or network measurement, and must never be presented as the location of an operator.",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-30.5, 20.25]
+      },
+      "properties": {
+        "indicator": "192.0.2.14",
+        "precision": "unknown",
+        "placeName": "Synthetic demonstration coordinate — no real location",
+        "notes": "Precision is unknown because these coordinates were invented for interface testing."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [145.75, -37.5]
+      },
+      "properties": {
+        "indicator": "198.51.100.23",
+        "precision": "unknown",
+        "placeName": "Synthetic demonstration coordinate — no real location",
+        "notes": "Precision is unknown because these coordinates were invented for interface testing."
+      }
+    }
+  ]
+}

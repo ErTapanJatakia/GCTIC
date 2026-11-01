@@ -24,6 +24,21 @@ export type GeoPrecision =
   /** Provider-supplied coordinate of unknown derivation. */
   | 'unknown';
 
+export const GEO_PRECISION_IDS = [
+  'country',
+  'region',
+  'city',
+  'facility',
+  'unknown',
+] as const satisfies readonly GeoPrecision[];
+
+export function isGeoPrecision(value: unknown): value is GeoPrecision {
+  return (
+    typeof value === 'string' &&
+    (GEO_PRECISION_IDS as readonly string[]).includes(value)
+  );
+}
+
 export interface GeoLocation {
   readonly point: GeoPoint;
   readonly precision: GeoPrecision;

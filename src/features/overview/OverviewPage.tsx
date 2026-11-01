@@ -15,35 +15,40 @@ const CAPABILITY_MODEL = [
   {
     id: 'ingestion',
     title: 'Intelligence ingestion',
-    phase: 'Phase 2',
+    phase: 'Phase 1.5',
+    state: 'partial',
     description:
-      'Connector adapters for open-source, community and internal reporting, isolated behind a provider contract so sources can be replaced without touching the interface.',
+      'The provider contract and registry are implemented, with a local JSON/GeoJSON adapter as the first connector. Remote feed adapters remain outstanding.',
   },
   {
     id: 'normalisation',
     title: 'Normalisation & validation',
-    phase: 'Phase 2',
+    phase: 'Phase 1.5',
+    state: 'partial',
     description:
-      'Every observable is validated, normalised and bounded before storage. Malformed or unsafe values are rejected at the boundary.',
+      'Observables are validated, canonicalised and bounded before storage, with deterministic deduplication and per-source observations retained.',
   },
   {
     id: 'correlation',
     title: 'IOC enrichment & correlation',
     phase: 'Phase 3',
+    state: 'planned',
     description:
-      'Corroboration across independent sources, with duplicate suppression and per-source provenance retained on every derived record.',
+      'Cross-source correlation and external enrichment. Basic corroboration counting across distinct sources is already implemented locally.',
   },
   {
     id: 'geospatial',
     title: 'Geospatial intelligence',
     phase: 'Phase 3',
+    state: 'planned',
     description:
-      'Geolocated observations rendered on a 3D globe, with coordinate precision and derivation stated wherever a location is shown.',
+      'Geolocated observations rendered on a 3D globe. Observation coordinates are already ingested and shown with declared precision.',
   },
   {
     id: 'analytics',
     title: 'Analytics & reporting',
     phase: 'Phase 5',
+    state: 'planned',
     description:
       'Temporal and geographic analysis, analyst-authored reports and exportable records that carry their citations.',
   },
@@ -51,6 +56,7 @@ const CAPABILITY_MODEL = [
     id: 'history',
     title: 'Historical intelligence',
     phase: 'Phase 4',
+    state: 'planned',
     description:
       'Append-oriented storage of observations so that trend analysis and retro-hunting are possible without losing source context.',
   },
@@ -92,15 +98,18 @@ export function OverviewPage() {
 
       <div className="notice" data-tone="warning">
         <div>
-          <p className="notice__title">Foundation build — not an operational intelligence system</p>
+          <p className="notice__title">Demonstration build — synthetic intelligence only</p>
           <p className="notice__body">
-            This deployment establishes the application shell, domain contracts and design system
-            for GCTIC. No threat feeds are collected, no indicator processing runs and no geospatial
-            visualisation is active. Nothing displayed by this build should inform a live security
+            GCTIC ingests a bundled JSON/GeoJSON dataset through the local provider adapter and
+            renders validated, normalised indicators in the IOC Explorer. No external feed is
+            collected, no geolocation service is queried and no geospatial visualisation is active.
+            Every record in this build is graded SYNTHETIC and must not inform a live security
             decision.
           </p>
           <ul className="notice__list">
-            <li>Intelligence providers configured: {formatCount(providerCount)}</li>
+            <li>
+              Provider adapters registered: {formatCount(providerCount)} — local dataset only
+            </li>
             <li>
               Capability areas declared but not implemented: {formatCount(plannedFeatureCount)} of{' '}
               {formatCount(Object.keys(FEATURE_FLAGS).length)}
@@ -131,10 +140,10 @@ export function OverviewPage() {
             <span className="metric__value">{formatCount(MODULE_COUNTS.planned)}</span>
             <span className="metric__hint">Clearly marked as unavailable in navigation</span>
           </div>
-          <div className="metric" data-state="warning">
+          <div className="metric" data-state="success">
             <span className="u-label">Provider adapters</span>
             <span className="metric__value">{formatCount(providerCount)}</span>
-            <span className="metric__hint">External intelligence sources connected</span>
+            <span className="metric__hint">Local synthetic dataset — 0 external sources</span>
           </div>
         </div>
       </Panel>
@@ -151,14 +160,18 @@ export function OverviewPage() {
                 <span className="capability__index">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <Badge variant="neutral">Planned</Badge>
+                <Badge variant={capability.state === 'partial' ? 'warning' : 'neutral'}>
+                  {capability.state === 'partial' ? 'Partial' : 'Planned'}
+                </Badge>
               </div>
               <h3 className="capability__title">{capability.title}</h3>
               <p className="capability__description">{capability.description}</p>
               <p className="capability__footer">
                 <span>{capability.phase}</span>
                 <span aria-hidden="true">·</span>
-                <span>Not implemented</span>
+                <span>
+                  {capability.state === 'partial' ? 'Local pipeline only' : 'Not implemented'}
+                </span>
               </p>
             </article>
           ))}
@@ -266,6 +279,18 @@ export function OverviewPage() {
                   </span>
                   Provider adapter contract and registry seam
                 </li>
+                <li>
+                  <span className="scope-list__mark" aria-hidden="true">
+                    +
+                  </span>
+                  Local JSON/GeoJSON ingestion, normalisation and deduplication
+                </li>
+                <li>
+                  <span className="scope-list__mark" aria-hidden="true">
+                    +
+                  </span>
+                  IOC Explorer with search, filters, pagination and provenance detail
+                </li>
               </ul>
             </div>
             <div>
@@ -281,7 +306,7 @@ export function OverviewPage() {
                   <span className="scope-list__mark" aria-hidden="true">
                     −
                   </span>
-                  IOC processing, enrichment and correlation engine
+                  Live feed connectors, external enrichment and cross-source correlation
                 </li>
                 <li>
                   <span className="scope-list__mark" aria-hidden="true">
