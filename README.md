@@ -4,11 +4,12 @@
 A global, geospatially enriched Cyber Threat Intelligence (CTI) platform for defensive security operations, portfolio-grade engineering demonstration and research use. 
 </p>
 
-> **Current status: Phase 1.5 — Local intelligence data foundation.** This repository contains
-> the application shell, design system, domain contracts, a local JSON/GeoJSON ingestion
-> pipeline (validation → normalisation → deduplication → `ThreatIndicator`) and a functional IOC
-> Explorer. Every record comes from a bundled **synthetic** dataset; no live feed is collected
-> and no geospatial visualisation is active. Nothing in this build should inform an operational
+> **Current status: Phase 2 — Geospatial foundation.** This repository contains the application
+> shell, design system, domain contracts, a local JSON/GeoJSON ingestion pipeline
+> (validation → normalisation → deduplication → `ThreatIndicator`), a functional IOC Explorer
+> and an interactive CesiumJS globe rendered from locally bundled imagery. Every record comes
+> from a bundled **synthetic** dataset; no live feed is collected and no location, threat marker
+> or attacker origin is plotted on the globe. Nothing in this build should inform an operational
 > security decision.
 
 - **Licence:** Apache License 2.0 (see [LICENSE](LICENSE))
@@ -48,10 +49,11 @@ picture while keeping every datum traceable to the source that supplied it.
 | Observable normalisation | **Implemented** | IPv4, IPv6 (RFC 5952), domain/FQDN, URL, MD5, SHA-1, SHA-256 |
 | IOC Explorer | **Implemented** | Search, type/category/grade filters, pagination, provenance detail |
 | Synthetic demonstration dataset | **Implemented** | 16 observations, 12 indicators, 2 synthetic sources, 2 GeoJSON points |
-| Unit tests | **Implemented** | 71 tests across validation, IP classification, normalisation, ingestion, provider and dataset |
-| External threat feed connectors | **Not implemented** | Phase 2 |
+| CesiumJS 3D globe | **Implemented** | Local Natural Earth II imagery, no ion token, WebGL fallback, camera controls |
+| Unit tests | **Implemented** | 96 tests: validation, IP classification, normalisation, ingestion, provider, dataset, globe lifecycle, controller, page and registry |
+| External threat feed connectors | **Not implemented** | Phase 3 |
+| Threat layers on the globe (markers, heat maps, arcs) and CZML playback | **Not implemented** | Phase 3 |
 | External enrichment / GeoIP | **Not implemented** | Phase 3 |
-| CesiumJS 3D globe and CZML playback | **Not implemented** | Phase 3 |
 | ECharts analytics and reporting | **Not implemented** | Phase 5 |
 | Historical storage and authentication | **Not implemented** | Phase 4–5 |
 
@@ -180,13 +182,18 @@ attacker because it appeared in a feed.
 | Language | TypeScript (strict) | 6.0 | Apache-2.0 |
 | Build / dev server | Vite | 8.3 | MIT |
 | Styling | Hand-written CSS with design tokens | — | in-repo |
+| 3D globe | CesiumJS | 1.146 | Apache-2.0 |
 | Tests | Vitest | 5.0 | MIT |
 | Lint | ESLint flat config + typescript-eslint | 10.14 / 8.72 | MIT |
 
-Deliberately **not** installed yet: CesiumJS, Apache ECharts, any state-management library,
-any CSS framework, any UI kit, any icon package, any analytics SDK. Icons are inline SVG;
-typography uses a system font stack so the application runs entirely offline with no CDN
-dependency. These are introduced only when the corresponding module is built.
+CesiumJS is installed as a local dependency and renders with the Natural Earth II imagery that
+ships inside the package (public domain). No Cesium ion token, tile subscription, terrain
+provider or geocoder is configured, so the globe makes no network request.
+
+Deliberately **not** installed yet: Apache ECharts, any state-management library, any CSS
+framework, any UI kit, any icon package, any analytics SDK. Icons are inline SVG; typography
+uses a system font stack so the application runs entirely offline with no CDN dependency. These
+are introduced only when the corresponding module is built.
 
 ---
 
@@ -200,6 +207,8 @@ dependency. These are introduced only when the corresponding module is built.
 ├── vite.config.ts              # build, dev server, path alias, Vitest config
 ├── eslint.config.js            # flat ESLint configuration
 ├── .env.example                # documented public configuration template
+├── scripts/
+│   └── sync-cesium-assets.mjs  # copies Cesium runtime assets into public/cesium
 ├── public/
 │   └── favicon.svg             # application mark
 └── src/
@@ -213,6 +222,7 @@ dependency. These are introduced only when the corresponding module is built.
     │                           # LoadingState, EmptyState, ErrorState, icons
     ├── config/
     │   ├── app.config.ts       # identity, runtime config, feature flags
+    │   ├── globe.config.ts     # camera framing, zoom limits, local imagery tuning
     │   ├── assessment-grades.ts# grade definitions and handling rules
     │   ├── threat-taxonomy.ts  # indicator type, category and reliability labels
     │   └── navigation.ts       # module registry (routes + readiness)
@@ -225,6 +235,7 @@ dependency. These are introduced only when the corresponding module is built.
     │   ├── indicators/         # IOC Explorer page and record detail panel
     │   ├── methodology/        # assessment, provenance, handling reference
     │   ├── system-status/      # runtime diagnostics, provider health panel
+    │   ├── threat-map/         # globe page, Cesium controller, React boundary
     │   ├── planned/            # explicit not-implemented placeholder
     │   └── not-found/          # 404 route
     ├── hooks/
@@ -250,6 +261,7 @@ dependency. These are introduced only when the corresponding module is built.
     │   ├── tokens.css          # colour, type, spacing, elevation, motion
     │   ├── base.css            # reset, typography, utility primitives
     │   ├── layout.css          # application shell and responsive behaviour
+    │   ├── globe.css           # geospatial view, toolbar, expanded mode
     │   └── components.css      # component and composition styles
     └── types/
         ├── intelligence.ts     # indicators, provenance, assessment, capabilities
@@ -376,9 +388,9 @@ The project is built to remain within an absolute INR 0 budget:
 - No paid API is required. No AI API key is needed. No external service is called at runtime.
 - The application runs fully offline after `npm ci` — fonts are system fonts, icons are inline
   SVG, and there is no CDN dependency.
-- Planned capabilities use free/open-source libraries: CesiumJS (Apache-2.0) and Apache ECharts
-  (Apache-2.0) will be installed as local dependencies. Any optional token-based imagery service
-  will remain optional, with open or local imagery sufficient for development.
+- CesiumJS (Apache-2.0) is installed locally and renders from the Natural Earth II texture
+  bundled with the package, so no ion token, tile service or API key is required. Apache ECharts
+  (Apache-2.0) will follow as a local dependency when analytics is built.
 - Free-tier constraints for future backend hosting will be documented when that layer is
   introduced; the frontend will keep working against local adapters without it.
 
@@ -410,8 +422,9 @@ no colour literals appear in component styles outside the token definitions.
 | --- | --- | --- |
 | 1 | Foundation: shell, routing, design system, domain model, validation, provider seam | **Complete** |
 | 1.5 | Local intelligence foundation: ingestion, normalisation, deduplication, IOC Explorer, synthetic dataset | **Complete** |
-| 2 | Intelligence sources: remote provider adapters, ingestion schedules, source status views | Planned |
-| 3 | Geospatial: CesiumJS globe, CZML event playback, geolocation precision handling | Planned |
+| 2 | Geospatial foundation: CesiumJS globe, camera controls, WebGL fallback, location-confidence model | **In progress** |
+| 2.5 | Intelligence sources: remote provider adapters, ingestion schedules, source status views | Planned |
+| 3 | Geospatial intelligence: threat markers, clustering, heat maps, connection arcs, CZML playback | Planned |
 | 4 | Analysis: actor and campaign tracking, correlation, historical observation store | Planned |
 | 5 | Analytics and reporting: ECharts views, report composition, export with citations | Planned |
 | 6 | Operations hardening: authentication, audit logging, deployment and observability | Planned |

@@ -23,7 +23,7 @@ export const APP_IDENTITY: AppIdentity = {
   fullName: 'Global Cyber Threat Intelligence Command Centre',
   version: __APP_VERSION__,
   buildTimestamp: __BUILD_TIMESTAMP__,
-  phase: 'Phase 1.5 — Local intelligence foundation',
+  phase: 'Phase 2 — Geospatial foundation',
   license: 'Apache-2.0',
   missionStatement:
     'A geospatially enriched cyber threat intelligence platform that consolidates open-source threat reporting into a single operational picture for defensive security teams, analysts and researchers.',
@@ -32,9 +32,10 @@ export const APP_IDENTITY: AppIdentity = {
 export type DataMode = 'demo' | 'test' | 'live';
 
 /**
- * Capability flags. Every flag except the shell itself is `false` in Phase 1:
- * the flags exist so that future modules can be enabled deliberately rather
- * than by accident, and so the interface can state honestly what is missing.
+ * Capability flags. A flag is `true` only once the corresponding capability
+ * exists: the flags exist so that future modules can be enabled deliberately
+ * rather than by accident, and so the interface can state honestly what is
+ * missing.
  */
 export type FeatureFlag =
   | 'liveFeeds'
@@ -46,7 +47,9 @@ export type FeatureFlag =
 
 export const FEATURE_FLAGS: Readonly<Record<FeatureFlag, boolean>> = {
   liveFeeds: false,
-  globe: false,
+  // The CesiumJS globe renders locally. No threat layer, marker or playback is
+  // plotted on it, so geospatial *intelligence* remains unimplemented.
+  globe: true,
   // Local validation, normalisation and deduplication are implemented. External
   // enrichment and cross-source correlation are not, and remain disabled.
   iocProcessing: true,

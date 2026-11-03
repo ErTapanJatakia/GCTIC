@@ -1,9 +1,11 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import type { ReactElement } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { ALL_MODULES } from '@/config/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { IocExplorerPage } from '@/features/indicators/IocExplorerPage';
 import { MethodologyPage } from '@/features/methodology/MethodologyPage';
 import { NotFoundPage } from '@/features/not-found/NotFoundPage';
@@ -11,6 +13,16 @@ import { OverviewPage } from '@/features/overview/OverviewPage';
 import { PlannedModulePage } from '@/features/planned/PlannedModulePage';
 import { SystemStatusPage } from '@/features/system-status/SystemStatusPage';
 import type { NavigationItem } from '@/types/navigation';
+
+/**
+ * The geospatial view is split into its own chunk: CesiumJS is several times
+ * larger than the rest of the application and must not delay every route.
+ */
+const ThreatMapPage = lazy(() =>
+  import('@/features/threat-map/ThreatMapPage').then((module) => ({
+    default: module.ThreatMapPage,
+  })),
+);
 
 /**
  * Resolve a registry entry to its route element.
@@ -30,6 +42,12 @@ function resolveModuleElement(module: NavigationItem): ReactElement {
         return <MethodologyPage />;
       case 'indicators':
         return <IocExplorerPage />;
+      case 'threat-map':
+        return (
+          <Suspense fallback={<LoadingState label="Loading geospatial module" rows={3} />}>
+            <ThreatMapPage />
+          </Suspense>
+        );
       default:
         return <PlannedModulePage module={module} />;
     }

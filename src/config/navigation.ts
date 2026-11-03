@@ -25,15 +25,15 @@ export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [
         id: 'threat-map',
         label: 'Global Threat Map',
         path: '/operations/threat-map',
-        status: 'planned',
+        status: 'available',
         icon: 'globe',
-        phase: 'Phase 3',
+        phase: 'Phase 2',
         summary:
-          'Interactive 3D globe plotting geolocated threat activity and source attribution.',
+          'Interactive CesiumJS globe: geospatial foundation with no threat layer plotted yet.',
         plannedCapabilities: [
-          'CesiumJS globe with territorial and infrastructure layers',
+          'Threat markers with source attribution',
+          'Cluster, heat map and connection-arc layers',
           'CZML driven time-dynamic event playback',
-          'Per-event provenance panel with assessment grade',
         ],
       },
       {

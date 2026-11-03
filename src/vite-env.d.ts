@@ -15,3 +15,10 @@ interface ImportMeta {
 declare const __APP_VERSION__: string;
 /** Injected by Vite at build time. */
 declare const __BUILD_TIMESTAMP__: string;
+/** Installed CesiumJS version, injected by Vite from node_modules. */
+declare const __CESIUM_VERSION__: string;
+
+interface Window {
+  /** Base URL Cesium resolves its static runtime assets against. */
+  CESIUM_BASE_URL?: string;
+}

@@ -52,7 +52,7 @@ const ARCHITECTURE_LAYERS = [
     id: 'geospatial',
     layer: 'Geospatial',
     responsibility: 'CesiumJS globe, CZML event playback',
-    status: 'Not implemented',
+    status: 'Implemented — globe foundation',
   },
 ] as const;
 

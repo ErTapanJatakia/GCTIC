@@ -33,6 +33,9 @@ local-data/
 *.pcap
 *.pcapng
 
+# Cesium runtime assets, copied from node_modules by scripts/sync-cesium-assets.mjs
+public/cesium/
+
 # Test output
 coverage/
 

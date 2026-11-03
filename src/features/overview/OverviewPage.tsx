@@ -39,10 +39,10 @@ const CAPABILITY_MODEL = [
   {
     id: 'geospatial',
     title: 'Geospatial intelligence',
-    phase: 'Phase 3',
-    state: 'planned',
+    phase: 'Phase 2',
+    state: 'partial',
     description:
-      'Geolocated observations rendered on a 3D globe. Observation coordinates are already ingested and shown with declared precision.',
+      'The CesiumJS globe, camera controls and location-confidence model are implemented locally. No threat layer, marker, heat map, arc or playback is plotted on it yet.',
   },
   {
     id: 'analytics',
@@ -102,9 +102,9 @@ export function OverviewPage() {
           <p className="notice__body">
             GCTIC ingests a bundled JSON/GeoJSON dataset through the local provider adapter and
             renders validated, normalised indicators in the IOC Explorer. No external feed is
-            collected, no geolocation service is queried and no geospatial visualisation is active.
-            Every record in this build is graded SYNTHETIC and must not inform a live security
-            decision.
+            collected and no geolocation service is queried. The CesiumJS globe is a geospatial
+            surface only: no observation, threat or attacker location is plotted on it. Every
+            record in this build is graded SYNTHETIC and must not inform a live security decision.
           </p>
           <ul className="notice__list">
             <li>
@@ -170,7 +170,7 @@ export function OverviewPage() {
                 <span>{capability.phase}</span>
                 <span aria-hidden="true">·</span>
                 <span>
-                  {capability.state === 'partial' ? 'Local pipeline only' : 'Not implemented'}
+                  {capability.state === 'partial' ? 'Implemented in part' : 'Not implemented'}
                 </span>
               </p>
             </article>
@@ -291,6 +291,12 @@ export function OverviewPage() {
                   </span>
                   IOC Explorer with search, filters, pagination and provenance detail
                 </li>
+                <li>
+                  <span className="scope-list__mark" aria-hidden="true">
+                    +
+                  </span>
+                  CesiumJS globe with local imagery, camera controls and WebGL fallback
+                </li>
               </ul>
             </div>
             <div>
@@ -312,7 +318,8 @@ export function OverviewPage() {
                   <span className="scope-list__mark" aria-hidden="true">
                     −
                   </span>
-                  CesiumJS globe and CZML time-dynamic playback
+                  Threat layers on the globe: markers, clustering, heat maps, connection arcs and
+                  CZML time-dynamic playback
                 </li>
                 <li>
                   <span className="scope-list__mark" aria-hidden="true">
